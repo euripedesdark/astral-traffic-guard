@@ -17,6 +17,7 @@ pub struct TrafficGuardServer {
     config: Arc<TrafficGuardConfig>,
     acl_controller: Arc<AclController>,
     proxy_controller: Arc<ProxyController>,
+    secure_proxy: Option<Arc<dyn crate::service::proxy_engine::ProxyService>>,
 }
 
 impl TrafficGuardServer {
@@ -24,11 +25,13 @@ impl TrafficGuardServer {
         config: Arc<TrafficGuardConfig>,
         acl_controller: Arc<AclController>,
         proxy_controller: Arc<ProxyController>,
+        secure_proxy: Option<Arc<dyn crate::service::proxy_engine::ProxyService>>,
     ) -> Self {
         Self {
             config,
             acl_controller,
             proxy_controller,
+            secure_proxy,
         }
     }
 
@@ -38,7 +41,7 @@ impl TrafficGuardServer {
             .allow_methods(Any)
             .allow_headers(Any);
 
-        Router::new()
+        let mut router = Router::new()
             .route(
                 "/health",
                 get(|State(ctrl): State<Arc<AclController>>| async move { ctrl.handle_health() }),
@@ -74,9 +77,11 @@ impl TrafficGuardServer {
                     ctrl.handle_check(req)
                 }),
             )
-            .layer(cors)
-            .layer(TraceLayer::new_for_http())
-            .with_state(self.acl_controller.clone())
+            .with_state(self.acl_controller.clone());
+        if let Some(service) = &self.secure_proxy {
+            router = router.merge(crate::controller::secure_proxy_controller::router(service.clone()));
+        }
+        router.layer(cors).layer(TraceLayer::new_for_http())
     }
 
     pub fn build_authproxy_router(&self) -> Router {
