@@ -65,3 +65,11 @@ pub struct Decision {
     pub reason: String,
     pub matched_rule_id: Option<Uuid>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all="snake_case")]
+pub enum ReputationSource { Manual, ExternalFeed, AiAnalysis }
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct WebCategory { pub slug:String }
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct DomainReputation { pub domain:String, pub category:WebCategory, pub source:ReputationSource }
