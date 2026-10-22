@@ -1,0 +1,44 @@
+# Rust / Cargo
+target/
+**/*.rs.bk
+Cargo.lock.bak
+
+# Node / Vite frontend
+node_modules/
+**/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Java legacy remnants
+*.jar
+*.class
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+
+# Environment and secrets
+auth.env
+*.env
+*.env.*
+!*.env.example
+
+# Temporary files and logs
+*.log
+*.tmp
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/
+# Java legacy
+java_src/
+pom.xml
