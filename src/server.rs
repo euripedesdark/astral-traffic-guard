@@ -19,6 +19,7 @@ pub struct TrafficGuardServer {
     proxy_controller: Arc<ProxyController>,
     secure_proxy: Option<Arc<dyn crate::service::proxy_engine::ProxyService>>,
     policy_evaluator: Option<Arc<dyn crate::service::policy_engine::PolicyEvaluator>>,
+    feed_manager: Option<crate::service::feed_manager::FeedManagerRef>,
 }
 
 impl TrafficGuardServer {
@@ -28,6 +29,7 @@ impl TrafficGuardServer {
         proxy_controller: Arc<ProxyController>,
         secure_proxy: Option<Arc<dyn crate::service::proxy_engine::ProxyService>>,
         policy_evaluator: Option<Arc<dyn crate::service::policy_engine::PolicyEvaluator>>,
+        feed_manager: Option<crate::service::feed_manager::FeedManagerRef>,
     ) -> Self {
         Self {
             config,
@@ -35,6 +37,7 @@ impl TrafficGuardServer {
             proxy_controller,
             secure_proxy,
             policy_evaluator,
+            feed_manager,
         }
     }
 
@@ -87,7 +90,10 @@ impl TrafficGuardServer {
         if let (Some(service),Some(evaluator))=(&self.secure_proxy,&self.policy_evaluator) {
             router=router.merge(crate::controller::policy_controller::router(service.clone(),evaluator.clone()));
         }
-        router.layer(cors).layer(TraceLayer::new_for_http())
+        if let (Some(auth),Some(feeds))=(&self.secure_proxy,&self.feed_manager){
+            router=router.merge(crate::controller::feed_controller::router(auth.clone(),feeds.clone()));
+        }
+        router.layer(TraceLayer::new_for_http())
     }
 
     pub fn build_authproxy_router(&self) -> Router {
