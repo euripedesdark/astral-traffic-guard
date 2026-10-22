@@ -41,6 +41,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 None
             }
         };
-    let server = TrafficGuardServer::new(config, acl_controller, proxy_controller, secure_proxy);
+    let policy_evaluator: Option<Arc<dyn service::policy_engine::PolicyEvaluator>> =
+        if secure_proxy.is_some() {
+            let url=std::env::var("ASTRAL_DATABASE_URL")?;
+            let pool=sqlx::PgPool::connect(&url).await?;
+            Some(Arc::new(service::policy_engine::PostgresPolicyEvaluator::new(pool)))
+        } else { None };
+    let server = TrafficGuardServer::new(config, acl_controller, proxy_controller, secure_proxy, policy_evaluator);
     server.run().await
 }
