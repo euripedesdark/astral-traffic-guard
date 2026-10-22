@@ -5,3 +5,4 @@ pub use acl_engine::{AclEngine, StatefulAclEngine};
 pub use auth_proxy::{LdapProxyAuthenticator, ProxyAuthenticator};
 pub mod proxy_engine;
 pub mod policy_engine;
+pub mod feed_manager;
