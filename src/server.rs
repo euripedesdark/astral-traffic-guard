@@ -18,6 +18,7 @@ pub struct TrafficGuardServer {
     acl_controller: Arc<AclController>,
     proxy_controller: Arc<ProxyController>,
     secure_proxy: Option<Arc<dyn crate::service::proxy_engine::ProxyService>>,
+    policy_evaluator: Option<Arc<dyn crate::service::policy_engine::PolicyEvaluator>>,
 }
 
 impl TrafficGuardServer {
@@ -26,12 +27,14 @@ impl TrafficGuardServer {
         acl_controller: Arc<AclController>,
         proxy_controller: Arc<ProxyController>,
         secure_proxy: Option<Arc<dyn crate::service::proxy_engine::ProxyService>>,
+        policy_evaluator: Option<Arc<dyn crate::service::policy_engine::PolicyEvaluator>>,
     ) -> Self {
         Self {
             config,
             acl_controller,
             proxy_controller,
             secure_proxy,
+            policy_evaluator,
         }
     }
 
@@ -80,6 +83,9 @@ impl TrafficGuardServer {
             .with_state(self.acl_controller.clone());
         if let Some(service) = &self.secure_proxy {
             router = router.merge(crate::controller::secure_proxy_controller::router(service.clone()));
+        }
+        if let (Some(service),Some(evaluator))=(&self.secure_proxy,&self.policy_evaluator) {
+            router=router.merge(crate::controller::policy_controller::router(service.clone(),evaluator.clone()));
         }
         router.layer(cors).layer(TraceLayer::new_for_http())
     }
