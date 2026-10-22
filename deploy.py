@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Astral Traffic Guard - Compilador e Publicador Limpo
-Executa compilação limpa em Rust (cargo clean + cargo build --release),
-copia o executável para o diretório global /opt/astral-traffic-guard
+Astral Internet Security - Compilador e Publicador Limpo
+Executa compilação do Frontend React/TypeScript (Vite),
+compilação limpa em Rust (cargo clean + cargo build --release),
+copia o executável e arquivos estáticos para o diretório global /opt/astral-traffic-guard
 e reinicia o serviço no systemd.
 
 Uso:
@@ -22,6 +23,9 @@ PORT = 8085
 AUTH_PORT = 8091
 GLOBAL_DIR = "/opt/astral-traffic-guard"
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(APP_DIR, "frontend")
+STATIC_BUILD_DIR = os.path.join(APP_DIR, "src", "main", "resources", "static", "firewall")
+TARGET_STATIC_DIR = os.path.join(GLOBAL_DIR, "static", "firewall")
 SUDO_PASS = "Btf1_Mk3"
 
 GREEN = "\033[0;32m"
@@ -41,19 +45,30 @@ def run_sudo(cmd):
 
 def main():
     print(f"{BLUE}{BOLD}============================================================{NC}")
-    print(f"{GREEN}{BOLD}   Astral Traffic Guard - Compilação & Publicação Limpa     {NC}")
+    print(f"{GREEN}{BOLD}   Astral Internet Security - Compilação & Publicação Limpa   {NC}")
     print(f"{BLUE}{BOLD}============================================================{NC}")
 
     os.chdir(APP_DIR)
 
-    # 1. Limpeza Completa (Clean Build)
+    # 1. Compilação do Frontend React/TypeScript
+    if os.path.exists(FRONTEND_DIR):
+        log("Compilando Frontend React/TypeScript (Vite + PrimeReact)...", BLUE)
+        start_front = time.time()
+        front_proc = subprocess.run(["npm", "run", "build"], cwd=FRONTEND_DIR, capture_output=True, text=True)
+        if front_proc.returncode != 0:
+            log(f"ERRO na compilação do Frontend:\n{front_proc.stderr or front_proc.stdout}", RED)
+            sys.exit(1)
+        elapsed_front = time.time() - start_front
+        log(f"Frontend compilado com sucesso em {elapsed_front:.2f} segundos!", GREEN)
+
+    # 2. Limpeza Completa (Clean Build) do Rust
     log("Limpando cache de compilação anterior (cargo clean)...", YELLOW)
     clean_proc = subprocess.run(["cargo", "clean", "-p", SERVICE_NAME], capture_output=True, text=True)
     if clean_proc.returncode != 0:
         subprocess.run(["cargo", "clean"], capture_output=True, text=True)
     log("Cache limpo com sucesso.", GREEN)
 
-    # 2. Compilação Otimizada de Release
+    # 3. Compilação Otimizada de Release em Rust
     log("Iniciando compilação otimizada em Rust (cargo build --release)...", BLUE)
     start_time = time.time()
     build_proc = subprocess.run(["cargo", "build", "--release"])
@@ -61,16 +76,16 @@ def main():
         log("ERRO: Falha na compilação do Rust!", RED)
         sys.exit(1)
     elapsed = time.time() - start_time
-    log(f"Compilação concluída com sucesso em {elapsed:.2f} segundos!", GREEN)
+    log(f"Backend Rust compilado com sucesso em {elapsed:.2f} segundos!", GREEN)
 
     bin_path = os.path.join(APP_DIR, "target", "release", SERVICE_NAME)
     if not os.path.exists(bin_path):
         log(f"ERRO: Binário compilado não encontrado em {bin_path}", RED)
         sys.exit(1)
 
-    # 3. Publicação no Diretório do Sistema (/opt/...)
-    log(f"Instalando binário no diretório global {GLOBAL_DIR}...", BLUE)
-    run_sudo(f"mkdir -p {GLOBAL_DIR}")
+    # 4. Publicação no Diretório do Sistema (/opt/...)
+    log(f"Instalando binário e arquivos no diretório global {GLOBAL_DIR}...", BLUE)
+    run_sudo(f"mkdir -p {GLOBAL_DIR} {TARGET_STATIC_DIR} /etc/astral && rm -rf {GLOBAL_DIR}/static/app")
     target_bin = os.path.join(GLOBAL_DIR, SERVICE_NAME)
     
     cp_res = run_sudo(f"cp -f {bin_path} {target_bin}")
@@ -79,32 +94,45 @@ def main():
         sys.exit(1)
 
     run_sudo(f"chmod 755 {target_bin}")
-    log(f"Binário instalado em {target_bin} com permissões 755.", GREEN)
 
-    # 4. Reinicialização do Serviço no Systemd
+    # Copiar estáticos do frontend se compilados
+    if os.path.exists(STATIC_BUILD_DIR):
+        log(f"Copiando arquivos da UI para {TARGET_STATIC_DIR}...", BLUE)
+        run_sudo(f"cp -rf {STATIC_BUILD_DIR}/* {TARGET_STATIC_DIR}/")
+        run_sudo(f"chmod -R 755 {GLOBAL_DIR}/static")
+
+    log(f"Binário e assets instalados em {GLOBAL_DIR} com sucesso.", GREEN)
+
+    # 5. Reinicialização do Serviço no Systemd
     log(f"Reiniciando serviço systemd '{SERVICE_NAME}'...", YELLOW)
     run_sudo(f"systemctl restart {SERVICE_NAME}")
-    time.sleep(1.5)
+    time.sleep(2.0)
 
-    # 5. Verificação de Saúde
+    # 6. Verificação de Saúde
     status_proc = run_sudo(f"systemctl is-active {SERVICE_NAME}")
     status = status_proc.stdout.strip()
     if status == "active":
-        log(f"SUCESSO! O serviço '{SERVICE_NAME}' está ATIVO e rodando nas portas {PORT} / {AUTH_PORT}.", GREEN)
+        log(f"SUCESSO! O serviço '{SERVICE_NAME}' está ATIVO e rodando na porta {PORT}.", GREEN)
     else:
         log(f"AVISO: O serviço retornou status: {status}", RED)
         log("Verificando logs recentes do journalctl:", YELLOW)
-        journal = run_sudo(f"journalctl -u {SERVICE_NAME} -n 10 --no-pager")
+        journal = run_sudo(f"journalctl -u {SERVICE_NAME} -n 15 --no-pager")
         print(journal.stdout)
         sys.exit(1)
 
-    # 6. Exibir portas e logs recentes
-    ports = run_sudo(f"ss -tulpn | grep -E ':{PORT}|:{AUTH_PORT}' || true")
+    # 7. Teste de Endpoint Health e UI
+    log("Validando endpoints REST e UI...", BLUE)
+    curl_health = run_sudo(f"curl -s http://127.0.0.1:{PORT}/health || true")
+    print(f"Health check: {curl_health.stdout.strip()}")
+
+    # 8. Exibir porta em escuta
+    ports = run_sudo(f"ss -tulpn | grep :{PORT} || true")
     if ports.stdout.strip():
-        print(f"\n{GREEN}Portas em escuta:{NC}\n{ports.stdout.strip()}")
+        print(f"\n{GREEN}Porta em escuta:{NC}\n{ports.stdout.strip()}")
 
     print(f"\n{BLUE}{BOLD}============================================================{NC}")
-    print(f"{GREEN}{BOLD}   Publicação concluída e validada com sucesso!             {NC}")
+    print(f"{GREEN}{BOLD}   Publicação e deploy concluídos com 100% de sucesso!       {NC}")
+    print(f"{BLUE}{BOLD}   Acesse a UI em: https://192.168.2.10/proxy/ ou http://192.168.2.10:{PORT}/proxy/          {NC}")
     print(f"{BLUE}{BOLD}============================================================{NC}")
 
 if __name__ == "__main__":

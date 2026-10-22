@@ -10,6 +10,7 @@ use axum::{
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::trace::TraceLayer;
+use tower_http::services::{ServeDir, ServeFile};
 use tracing::info;
 
 pub struct TrafficGuardServer {
@@ -18,6 +19,7 @@ pub struct TrafficGuardServer {
     proxy_controller: Arc<ProxyController>,
     secure_proxy: Option<Arc<dyn crate::service::proxy_engine::ProxyService>>,
     policy_evaluator: Option<Arc<dyn crate::service::policy_engine::PolicyEvaluator>>,
+    feed_manager: Option<crate::service::feed_manager::FeedManagerRef>,
 }
 
 impl TrafficGuardServer {
@@ -27,6 +29,7 @@ impl TrafficGuardServer {
         proxy_controller: Arc<ProxyController>,
         secure_proxy: Option<Arc<dyn crate::service::proxy_engine::ProxyService>>,
         policy_evaluator: Option<Arc<dyn crate::service::policy_engine::PolicyEvaluator>>,
+        feed_manager: Option<crate::service::feed_manager::FeedManagerRef>,
     ) -> Self {
         Self {
             config,
@@ -34,11 +37,30 @@ impl TrafficGuardServer {
             proxy_controller,
             secure_proxy,
             policy_evaluator,
+            feed_manager,
         }
     }
 
     pub fn build_api_router(&self) -> Router {
-        let mut router = Router::new()
+        let cors = CorsLayer::new()
+            .allow_origin(Any)
+            .allow_methods(Any)
+            .allow_headers(Any);
+
+        let static_dir = if std::path::Path::new("/opt/astral-traffic-guard/static/proxy/index.html").exists() {
+            std::path::PathBuf::from("/opt/astral-traffic-guard/static/proxy")
+        } else if std::path::Path::new("./src/main/resources/static/proxy/index.html").exists() {
+            std::path::PathBuf::from("./src/main/resources/static/proxy")
+        } else {
+            std::path::PathBuf::from("/opt/astral-traffic-guard/static/proxy")
+        };
+
+        let index_file = static_dir.join("index.html");
+        let serve_dir = ServeDir::new(&static_dir).fallback(ServeFile::new(index_file));
+
+        Router::new()
+            .route("/", get(|| async { axum::response::Redirect::temporary("/proxy/") }))
+            .nest_service("/proxy", serve_dir)
             .route(
                 "/health",
                 get(|State(ctrl): State<Arc<AclController>>| async move { ctrl.handle_health() }),
@@ -80,6 +102,9 @@ impl TrafficGuardServer {
         }
         if let (Some(service),Some(evaluator))=(&self.secure_proxy,&self.policy_evaluator) {
             router=router.merge(crate::controller::policy_controller::router(service.clone(),evaluator.clone()));
+        }
+        if let (Some(auth),Some(feeds))=(&self.secure_proxy,&self.feed_manager){
+            router=router.merge(crate::controller::feed_controller::router(auth.clone(),feeds.clone()));
         }
         router.layer(TraceLayer::new_for_http())
     }

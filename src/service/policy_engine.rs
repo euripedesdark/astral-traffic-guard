@@ -22,10 +22,11 @@ pub trait PolicyEvaluator: Send + Sync {
 
 pub struct PostgresPolicyEvaluator {
     db: PgPool,
+    reputation: Option<crate::service::feed_manager::FeedManagerRef>,
 }
 
 impl PostgresPolicyEvaluator {
-    pub fn new(db: PgPool) -> Self { Self {db} }
+    pub fn new(db: PgPool, reputation: Option<crate::service::feed_manager::FeedManagerRef>) -> Self { Self {db,reputation} }
 
     fn validate_condition(c: &PolicyCondition) -> Result<()> {
         match c {
@@ -124,6 +125,12 @@ impl PolicyEvaluator for PostgresPolicyEvaluator {
         }).collect()
     }
     async fn evaluate(&self,c:&RequestContext)->Result<PolicyDecision>{
+        let mut context=c.clone();
+        context.category=None;
+        if let Some(manager)=&self.reputation {
+            context.category=manager.resolve(&context.host).await.map_err(ProxyError)?.map(|r|r.category.slug);
+        }
+        let c=&context;
         // A failed DB fetch must NEVER turn into an allow decision.
         for p in self.list().await? {
             if p.enabled && !p.conditions.is_empty() && p.conditions.iter().all(|v|Self::matches(v,c)){
