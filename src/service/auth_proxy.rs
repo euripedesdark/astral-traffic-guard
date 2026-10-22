@@ -53,7 +53,9 @@ impl ProxyAuthenticator for LdapProxyAuthenticator {
             format!("{}@{}", user, self.ldap_domain)
         };
 
-        let settings = LdapConnSettings::new().set_no_tls_verify(true);
+        // Legacy LDAP path: never disable CA/hostname validation. Prefer auth-service for all new clients.
+        if !self.ldap_url.starts_with("ldaps://") { warn!("Refusing cleartext LDAP proxy authentication"); return false; }
+        let settings = LdapConnSettings::new();
         if let Ok((conn, mut ldap)) = LdapConnAsync::with_settings(settings, &self.ldap_url).await {
             ldap3::drive!(conn);
             return ldap.simple_bind(&bind_dn, pass).await.is_ok();
