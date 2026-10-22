@@ -9,7 +9,6 @@ use axum::{
 };
 use std::net::SocketAddr;
 use std::sync::Arc;
-use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use tracing::info;
 
@@ -39,11 +38,6 @@ impl TrafficGuardServer {
     }
 
     pub fn build_api_router(&self) -> Router {
-        let cors = CorsLayer::new()
-            .allow_origin(Any)
-            .allow_methods(Any)
-            .allow_headers(Any);
-
         let mut router = Router::new()
             .route(
                 "/health",
@@ -87,7 +81,7 @@ impl TrafficGuardServer {
         if let (Some(service),Some(evaluator))=(&self.secure_proxy,&self.policy_evaluator) {
             router=router.merge(crate::controller::policy_controller::router(service.clone(),evaluator.clone()));
         }
-        router.layer(cors).layer(TraceLayer::new_for_http())
+        router.layer(TraceLayer::new_for_http())
     }
 
     pub fn build_authproxy_router(&self) -> Router {
