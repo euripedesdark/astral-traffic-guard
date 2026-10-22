@@ -44,7 +44,7 @@ function App() {
             <Button
               key={item}
               text={section !== item}
-              label={item === 'acl' ? 'Políticas ACL' : item === 'proxyPolicies' ? 'Secure Proxy Policies' : 'Traffic Server'}
+              label={item === 'acl' ? 'Políticas ACL' : item === 'feeds' ? 'Feed Manager' : item === 'proxyPolicies' ? 'Secure Proxy Policies' : 'Traffic Server'}
               onClick={() => setSection(item)}
             />
           ))}
@@ -67,7 +67,7 @@ function App() {
           />
         </div>
       </header>
-      <h1 className="modtitle">{section === 'acl' ? 'Controle de Acesso Web (ACL)' : section === 'proxyPolicies' ? 'Secure Proxy — Hybrid Policies' : 'Apache Traffic Server'}</h1>
+      <h1 className="modtitle">{section === 'acl' ? 'Controle de Acesso Web (ACL)' : section === 'feeds' ? 'Reputation Feed Manager' : section === 'proxyPolicies' ? 'Secure Proxy — Hybrid Policies' : 'Apache Traffic Server'}</h1>
       <Page user={user} setSection={setSection}/>
     </div>
   );

@@ -41,12 +41,42 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 None
             }
         };
+    let feed_manager: Option<service::feed_manager::FeedManagerRef> =
+        if secure_proxy.is_some() {
+            let url=std::env::var("ASTRAL_DATABASE_URL")?;
+            let hosts=std::env::var("ASTRAL_FEED_ALLOWED_HOSTS").unwrap_or_default();
+            let hosts=hosts.split(',').map(|s|s.trim().to_string()).filter(|s|!s.is_empty()).collect();
+            let pool=sqlx::PgPool::connect(&url).await?;
+            match service::feed_manager::PostgresFeedManager::new(pool,hosts) {
+                Ok(manager)=>Some(Arc::new(manager)),
+                Err(reason)=>{tracing::warn!(%reason,"Feed manager disabled");None}
+            }
+        } else {None};
+    if let Some(feeds)=feed_manager.clone() {
+        tokio::spawn(async move {
+            let mut timer=tokio::time::interval(std::time::Duration::from_secs(6*60*60));
+            timer.tick().await; // initial tick only sets cadence; does not automatically fetch on startup
+            loop {
+                timer.tick().await;
+                match feeds.feeds().await {
+                    Ok(items)=>{
+                        for item in items.into_iter().filter(|f|f.enabled) {
+                            if let Err(reason)=feeds.refresh(item.id).await {
+                                tracing::warn!(feed_id=%item.id,%reason,"scheduled feed refresh failed");
+                            }
+                        }
+                    },
+                    Err(reason)=>tracing::warn!(%reason,"cannot list feeds for scheduled refresh")
+                }
+            }
+        });
+    }
     let policy_evaluator: Option<Arc<dyn service::policy_engine::PolicyEvaluator>> =
         if secure_proxy.is_some() {
             let url=std::env::var("ASTRAL_DATABASE_URL")?;
             let pool=sqlx::PgPool::connect(&url).await?;
-            Some(Arc::new(service::policy_engine::PostgresPolicyEvaluator::new(pool)))
+            Some(Arc::new(service::policy_engine::PostgresPolicyEvaluator::new(pool,feed_manager.clone())))
         } else { None };
-    let server = TrafficGuardServer::new(config, acl_controller, proxy_controller, secure_proxy, policy_evaluator);
+    let server = TrafficGuardServer::new(config, acl_controller, proxy_controller, secure_proxy, policy_evaluator, feed_manager);
     server.run().await
 }
