@@ -96,7 +96,12 @@ impl ReputationService for PostgresFeedManager{
   let res=self.http.get(url).send().await.map_err(|e|e.to_string())?;
   if !res.status().is_success(){return Err(format!("feed upstream status {}",res.status()));}
   if res.content_length().is_some_and(|n|n>8_000_000){return Err("feed exceeds size limit".into());}
-  let bytes=res.bytes().await.map_err(|e|e.to_string())?;
+  let mut res=res;
+  let mut bytes=Vec::new();
+  while let Some(chunk)=res.chunk().await.map_err(|e|e.to_string())? {
+   if bytes.len().saturating_add(chunk.len())>8_000_000{return Err("feed exceeds size limit".into());}
+   bytes.extend_from_slice(&chunk);
+  }
   let body=std::str::from_utf8(&bytes).map_err(|_|"feed must be UTF-8")?;
   let entries=Self::parse_feed(body)?;
   let mut tx=self.db.begin().await.map_err(|e|e.to_string())?;
