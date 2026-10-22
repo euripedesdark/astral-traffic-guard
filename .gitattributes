@@ -1,0 +1,6 @@
+# Linguist configuration
+*.sh linguist-vendored
+*.sql linguist-vendored
+*.properties linguist-vendored
+scripts/* linguist-vendored
+docs/* linguist-documentation
