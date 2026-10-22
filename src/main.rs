@@ -41,12 +41,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 None
             }
         };
+    let feed_manager: Option<service::feed_manager::FeedManagerRef> =
+        if secure_proxy.is_some() {
+            let url=std::env::var("ASTRAL_DATABASE_URL")?;
+            let hosts=std::env::var("ASTRAL_FEED_ALLOWED_HOSTS").unwrap_or_default();
+            let hosts=hosts.split(',').map(|s|s.trim().to_string()).filter(|s|!s.is_empty()).collect();
+            let pool=sqlx::PgPool::connect(&url).await?;
+            match service::feed_manager::PostgresFeedManager::new(pool,hosts) {
+                Ok(manager)=>Some(Arc::new(manager)),
+                Err(reason)=>{tracing::warn!(%reason,"Feed manager disabled");None}
+            }
+        } else {None};
     let policy_evaluator: Option<Arc<dyn service::policy_engine::PolicyEvaluator>> =
         if secure_proxy.is_some() {
             let url=std::env::var("ASTRAL_DATABASE_URL")?;
             let pool=sqlx::PgPool::connect(&url).await?;
-            Some(Arc::new(service::policy_engine::PostgresPolicyEvaluator::new(pool)))
+            Some(Arc::new(service::policy_engine::PostgresPolicyEvaluator::new(pool,feed_manager.clone())))
         } else { None };
-    let server = TrafficGuardServer::new(config, acl_controller, proxy_controller, secure_proxy, policy_evaluator);
+    let server = TrafficGuardServer::new(config, acl_controller, proxy_controller, secure_proxy, policy_evaluator, feed_manager);
     server.run().await
 }
