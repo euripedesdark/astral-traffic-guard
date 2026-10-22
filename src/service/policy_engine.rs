@@ -1,11 +1,11 @@
 use crate::domain::policy::{NewProxyPolicy, PolicyAction, PolicyCondition, PolicyDecision, ProxyPolicy, RequestContext};
-use crate::service::proxy_engine::{ProxyError, ProxyService};
+use crate::service::proxy_engine::ProxyError;
 use async_trait::async_trait;
 use chrono::NaiveTime;
 use ipnet::IpNet;
 use regex::RegexBuilder;
 use sqlx::{PgPool, Row};
-use std::{net::IpAddr, str::FromStr, sync::Arc};
+use std::str::FromStr;
 use uuid::Uuid;
 
 type Result<T> = std::result::Result<T, ProxyError>;

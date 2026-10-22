@@ -9,7 +9,6 @@ use axum::{
 };
 use std::net::SocketAddr;
 use std::sync::Arc;
-use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use tower_http::services::{ServeDir, ServeFile};
 use tracing::info;

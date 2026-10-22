@@ -37,3 +37,17 @@ ISO/IEC 27001:2022 Annex A mappings (2013 numbering from original request in par
 | deny-default policy, segmentation & inspection pending | 8.20, 8.21, 8.22, 8.23 | A.13 |
 | alert/incident workflow integration pending | 5.24–5.28 | A.16 |
 These mappings document design intent, **not** certification, guaranteed compliance, or a completed control implementation.
+
+## Hybrid policy engine extension
+- `src/domain/policy.rs`: typed `PolicyCondition`, `ProxyPolicy`, `RequestContext`, `PolicyDecision`.
+- `src/service/policy_engine.rs`: trait `PolicyEvaluator` with `Arc<dyn PolicyEvaluator>`; PostgreSQL ordered by `priority DESC, id ASC`; AND on conditions; first match wins; default deny.
+- `src/controller/policy_controller.rs`: protected CRUD. No public policy evaluation endpoint is exposed because client-supplied source IP, zone, group or URL would be spoofable.
+- `migrations/20261022_hybrid_proxy_policies.sql`: JSONB for bounded serialized conditions (24 max), indexed policy ordering; this is an evaluation-read-friendly tradeoff, not full 1:N relational normalization. Rules must be validated by the Rust domain/service.
+- `frontend/src/modules/proxy/ProxyPolicyModule.tsx`: dynamic policy-condition builder and priority table; currently requires authenticated Bearer token support in shared frontend client, not yet connected.
+- `INSPECT` intentionally fails closed (DENY) until a working TLS inspection and content-inspection path exists. Do not equate `PolicyDecision::Deny` with active network enforcement without a traffic-adapter.
+- Categories, application and zone fields are **verified inputs** to be populated by trusted gateway/inspection adapters; do not accept values from arbitrary clients.
+- Regex checks enforce pattern length and compiled-memory limits, but a per-request regex compilation and full database read requires cache/benchmark tuning.
+- The legacy `/auth` handler and `/api/v1/acl/check` are not yet replaced, so their enforcement behavior is unchanged. The legacy ACL defaults to ALLOW.
+- CORS wildcard has been removed from the API router; use a deliberate allowlist in deployment if cross-origin access is required.
+- CA issuance, TLS termination, active DPI, DLP content scan, URL-category data feed, incident engine linkage, verified identity/IP attribution and secure log delivery are still missing.
+- No Rust build or browser tests have run in the tool environment; lockfile dependency versions must be updated before merge.
