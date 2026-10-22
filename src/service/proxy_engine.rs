@@ -4,7 +4,7 @@ use reqwest::Client;
 use serde::Deserialize;
 use serde_json::json;
 use sqlx::PgPool;
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
 use uuid::Uuid;
 
 #[derive(Debug)]
@@ -89,7 +89,7 @@ impl ProxyService for PostgresProxyService {
         Self::management(actor)?;
         if r.name.trim().is_empty() || !["ad","local","any"].contains(&r.identity_source.as_str())
             || !["ALLOW","DENY"].contains(&r.action.as_str()) || !valid_pattern(&r.host_pattern)
-            || r.port.is_some_and(|p| !(1..=65535).contains(&p)) {
+            || r.port.map_or(false,|p| !(1..=65535).contains(&p)) {
             return Err(ProxyError("invalid proxy rule".into()));
         }
         // Audit failure MUST abort rule change: one database transaction.
@@ -125,8 +125,8 @@ impl ProxyService for PostgresProxyService {
         let mut decision=Decision { allowed:false, reason:"default deny".into(), matched_rule_id:None };
         for rule in rules {
             if !rule.enabled || !(rule.identity_source=="any" || rule.identity_source==src) {continue;}
-            if rule.port.is_some_and(|p|p != request.port as i32) {continue;}
-            if !rule.identity_group.as_ref().is_none_or(|g|actor.groups.contains(g)) {continue;}
+            if rule.port.map_or(false,|p|p != request.port as i32) {continue;}
+            if rule.identity_group.as_ref().map_or(false,|g|!actor.groups.contains(g)) {continue;}
             if !match_host(&rule.host_pattern,&request.host) {continue;}
             decision=Decision {allowed:rule.action=="ALLOW", reason:rule.action, matched_rule_id:Some(rule.id)};
             break;
@@ -137,7 +137,7 @@ impl ProxyService for PostgresProxyService {
     }
 }
 fn valid_host(host:&str)->bool { !host.is_empty() && host.len()<=253 && host.bytes().all(|b|b.is_ascii_alphanumeric() || b==b'.' || b==b'-') && !host.contains("..") }
-fn valid_pattern(pattern:&str)->bool { pattern=="*" || valid_host(pattern) || pattern.strip_prefix("*.").is_some_and(valid_host) }
+fn valid_pattern(pattern:&str)->bool { pattern=="*" || valid_host(pattern) || pattern.strip_prefix("*.").map_or(false,valid_host) }
 fn match_host(pattern:&str,host:&str)->bool {
     let host=host.to_ascii_lowercase();let p=pattern.to_ascii_lowercase();
     if p=="*" || p==host {return true;}
