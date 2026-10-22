@@ -24,9 +24,9 @@ const ACAO_DROP = () => [{label: 'ALLOW', value: 'ALLOW'}, {label: 'DENY', value
 export default function AclPage() {
     const{t}=useTranslation();
     const EXCECAO_DROP = [
-        {label: `${t('acl.default.allowed')} (libera sempre)`, value: 'ALLOW'},
-        {label: `${t('acl.default.byCategory')} (bloqueia sempre)`, value: 'DENY'},
-        {label: 'BYPASS (pula o motor e o cache)', value: 'BYPASS'}
+        {label: `${t('acl.default.allowed')} (${t('acl.alwaysAllow')})`, value: 'ALLOW'},
+        {label: `${t('acl.default.byCategory')} (${t('acl.alwaysDeny')})`, value: 'DENY'},
+        {label: t('acl.bypassLabel'), value: 'BYPASS'}
     ];
     const [stats, setStats] = useState<Stats>({});
     const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -260,8 +260,8 @@ export default function AclPage() {
 
                     <TabPanel header={`${t('acl.categories')} (${categorias.length})`}>
                         <DataTable value={categorias} size="small" stripedRows rows={10}>
-                            <Column field="code" header={t('acl.default')==='DEFAULT'?'CODIGO':'CODIGO'} />
-                            <Column field="name" header={t('acl.default')==='DEFAULT'?'NOME':'NOME'} />
+                            <Column field="code" header={t('acl.colCode')} />
+                            <Column field="name" header={t('acl.colName')} />
                             <Column header={t('acl.default')} body={(c: Categoria) =>
                                 <Tag value={c.blockedByDefault ? t('acl.default.byCategory') : t('acl.default.allowed')}
                                      severity={c.blockedByDefault ? 'danger' : 'success'} />} />

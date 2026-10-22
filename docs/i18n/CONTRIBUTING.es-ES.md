@@ -81,7 +81,7 @@ modelo — ATS y Nginx dependen de la cabecera de proxy confiable.
 
 Hay una excepción: `GET /api/v1/acl/check` **acepta** un Bearer JWT HS256, y
 está **desactivada por defecto** (`ASTRAL_AUTH_JWT_ENABLED=false`). El
-BrasilCloud Auth Service todavía no emite tokens, y validar un JWT que nadie
+Astral Auth Service todavía no emite tokens, y validar un JWT que nadie
 emite es trabajo por nada. Si vas a activarlo, lee antes la
 [guía de integración](../../docs/GUIA-INTEGRACAO-AUTH-SERVICE.md) — sobre todo
 la sección 28, sobre lo que exigirá la emisión.
@@ -181,7 +181,7 @@ decisión, actualiza ese archivo en el mismo PR.
 ## Licencia
 
 Al contribuir, aceptas que tus contribuciones se licencien bajo la GNU Affero
-General Public License v3.0 (AGPLv3).
+General Public License v3.0 (Proprietary).
 
 ## 🌐 Otros idiomas
 

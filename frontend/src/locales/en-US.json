@@ -5,7 +5,13 @@
     "admin": "ADMIN",
     "user": "USER",
     "logout": "Log out",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "modtitle": {
+      "acl": "Web Access Control (ACL)",
+      "trafficServer": "Apache Traffic Server",
+      "proxyPolicies": "Secure Proxy — Hybrid Policies",
+      "feeds": "Reputation Feed Manager"
+    }
   },
   "login": {
     "title": "ASTRAL TRAFFIC GUARD",
@@ -23,7 +29,7 @@
   "nav": {
     "overview": "Overview",
     "firewall": "Firewall",
-    "acl": "Navigation ACL",
+    "acl": "ACL Policies",
     "trafficServer": "Traffic Server",
     "activeDirectory": "Active Directory",
     "postgres": "PostgreSQL",
@@ -32,7 +38,9 @@
     "network": "Network",
     "addressing": "Addressing",
     "terminal": "Terminal",
-    "certs": "Certificates"
+    "certs": "Certificates",
+    "proxyPolicies": "Proxy Policies",
+    "feeds": "Feed Manager"
   },
   "common": {
     "loading": "Loading…",
@@ -45,7 +53,10 @@
     "reload": "Reload",
     "invalidateCache": "Invalidate cache",
     "error": "Error",
-    "none": "none"
+    "none": "none",
+    "configuration": "Configuration",
+    "yes": "Yes",
+    "no": "No"
   },
   "overview": {
     "mods": {
@@ -200,7 +211,12 @@
     "auth": "authproxy → 127.0.0.1:8091",
     "mode": "forward (explicit proxy)",
     "remap": "not required",
-    "flow": "Client → ATS 3128 → 8091 validates in AD → origin. No credential: 401."
+    "flow": "Client → ATS 3128 → 8091 validates in AD → origin. No credential: 401.",
+    "colListen": "Listen",
+    "colAuth": "Auth",
+    "colMode": "Mode",
+    "colRemap": "Remap",
+    "flowTitle": "Flow"
   },
   "acl": {
     "title": "Navigation ACL",
@@ -263,7 +279,12 @@
       "patternAndCategory": "provide pattern and category",
       "exceptionPattern": "provide the exception pattern",
       "categoryAndGroup": "choose category and group"
-    }
+    },
+    "colCode": "CODE",
+    "colName": "NAME",
+    "bypassLabel": "BYPASS (skips engine and cache)",
+    "alwaysAllow": "always allow",
+    "alwaysDeny": "always block"
   },
   "ad": {
     "session": "Session",
@@ -358,5 +379,77 @@
     "invalidCredentials": "Invalid credentials.",
     "caNotIssued": "CA not yet issued on this server.",
     "failure": "Failure"
+  },
+  "feeds": {
+    "title": "Feed Manager — Web Reputation",
+    "namePlaceholder": "Feed name",
+    "urlPlaceholder": "https://trusted.example/feed.txt",
+    "addFeed": "Add feed",
+    "feedAddedNotice": "Feed added; refresh it to import indicators.",
+    "reload": "Reload",
+    "adminNote": "Only administrator-approved HTTPS hosts are accepted by the backend. An empty or unsuccessful refresh preserves the previous version.",
+    "colFeed": "Feed",
+    "colCategory": "Category",
+    "colUrl": "HTTPS URL",
+    "colEnabled": "Enabled",
+    "colImport": "Import / Refresh",
+    "refresh": "Refresh",
+    "importedNotice": "Imported {{entries}} indicators from {{name}}"
+  },
+  "proxyPolicies": {
+    "title": "Hybrid Policy Builder — First Match Wins",
+    "namePlaceholder": "Policy name",
+    "action": "Action",
+    "priority": "Priority",
+    "addCondition": "Add condition",
+    "policyNote": "All conditions must match (AND). Larger priority runs first; UUID breaks ties. No match means DENY. INSPECT is not currently a TLS intercept capability.",
+    "condition": "Condition",
+    "headerName": "Header name",
+    "headerRegex": "Header regex",
+    "startUtc": "Start UTC HH:MM",
+    "endUtc": "End UTC HH:MM",
+    "conditionValue": "Condition value",
+    "removeCondition": "Remove condition",
+    "createPolicy": "Create policy",
+    "orderedPolicies": "Ordered policies",
+    "colPriority": "Priority",
+    "colPolicy": "Policy",
+    "colAction": "Action",
+    "colConditions": "Conditions",
+    "colDelete": "Delete",
+    "delete": "Delete",
+    "errors": {
+      "required": "Name and conditions required"
+    }
+  },
+  "proxyModule": {
+    "title": "Secure Proxy — Identity & Rules",
+    "ruleName": "Rule name",
+    "domainPattern": "example.org or *.example.org",
+    "identitySource": "Identity source",
+    "sources": {
+      "ad": "AD / auth-service",
+      "local": "Local proxy role",
+      "any": "Any authenticated"
+    },
+    "group": "AD group (optional)",
+    "port": "Any port",
+    "createRule": "Create rule",
+    "noRules": "No proxy rules configured",
+    "colRule": "Rule",
+    "colIdentity": "Identity",
+    "colGroup": "Group",
+    "colHost": "Host",
+    "colPort": "Port",
+    "colPriority": "Priority",
+    "colAction": "Action",
+    "colManage": "Manage",
+    "delete": "Delete",
+    "auditTitle": "ISO security audit — last 200 entries",
+    "noAudit": "No audit events",
+    "colTimestamp": "Timestamp",
+    "colOperation": "Operation",
+    "colTarget": "Target",
+    "colResult": "Result"
   }
 }

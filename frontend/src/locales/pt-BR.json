@@ -5,7 +5,13 @@
     "admin": "ADMIN",
     "user": "USER",
     "logout": "Sair",
-    "loading": "Carregando…"
+    "loading": "Carregando…",
+    "modtitle": {
+      "acl": "Controle de Acesso Web (ACL)",
+      "trafficServer": "Apache Traffic Server",
+      "proxyPolicies": "Secure Proxy — Políticas Híbridas",
+      "feeds": "Reputation Feed Manager"
+    }
   },
   "login": {
     "title": "ASTRAL TRAFFIC GUARD",
@@ -23,7 +29,7 @@
   "nav": {
     "overview": "Visão geral",
     "firewall": "Firewall",
-    "acl": "ACL de Navegação",
+    "acl": "Políticas ACL",
     "trafficServer": "Traffic Server",
     "activeDirectory": "Active Directory",
     "postgres": "PostgreSQL",
@@ -32,7 +38,9 @@
     "network": "Rede",
     "addressing": "Endereçamento",
     "terminal": "Terminal",
-    "certs": "Certificados"
+    "certs": "Certificados",
+    "proxyPolicies": "Políticas do Proxy",
+    "feeds": "Feed Manager"
   },
   "common": {
     "loading": "Carregando…",
@@ -45,7 +53,10 @@
     "reload": "Recarregar",
     "invalidateCache": "Invalidar cache",
     "error": "Erro",
-    "none": "nenhum"
+    "none": "nenhum",
+    "configuration": "Configuração",
+    "yes": "Sim",
+    "no": "Não"
   },
   "overview": {
     "mods": {
@@ -200,7 +211,12 @@
     "auth": "authproxy → 127.0.0.1:8091",
     "mode": "forward (proxy explícito)",
     "remap": "não requerido",
-    "flow": "Cliente → ATS 3128 → 8091 valida no AD → origem. Sem credencial: 401."
+    "flow": "Cliente → ATS 3128 → 8091 valida no AD → origem. Sem credencial: 401.",
+    "colListen": "Escuta",
+    "colAuth": "Auth",
+    "colMode": "Modo",
+    "colRemap": "Remap",
+    "flowTitle": "Fluxo"
   },
   "acl": {
     "title": "ACL de Navegação",
@@ -263,7 +279,12 @@
       "patternAndCategory": "informe o padrao e a categoria",
       "exceptionPattern": "informe o padrao da excecao",
       "categoryAndGroup": "escolha categoria e grupo"
-    }
+    },
+    "colCode": "CÓDIGO",
+    "colName": "NOME",
+    "bypassLabel": "BYPASS (pula o motor e o cache)",
+    "alwaysAllow": "libera sempre",
+    "alwaysDeny": "bloqueia sempre"
   },
   "ad": {
     "session": "Sessão",
@@ -358,5 +379,77 @@
     "invalidCredentials": "Credenciais inválidas.",
     "caNotIssued": "CA ainda não emitida neste servidor.",
     "failure": "Falha"
+  },
+  "feeds": {
+    "title": "Feed Manager — Reputação Web",
+    "namePlaceholder": "Nome do feed",
+    "urlPlaceholder": "https://confiavel.exemplo/feed.txt",
+    "addFeed": "Adicionar feed",
+    "feedAddedNotice": "Feed adicionado; atualize-o para importar indicadores.",
+    "reload": "Recarregar",
+    "adminNote": "Apenas hosts HTTPS aprovados pelo administrador são aceitos pelo backend. Uma atualização vazia ou sem sucesso preserva a versão anterior.",
+    "colFeed": "Feed",
+    "colCategory": "Categoria",
+    "colUrl": "URL HTTPS",
+    "colEnabled": "Ativo",
+    "colImport": "Importar / Atualizar",
+    "refresh": "Atualizar",
+    "importedNotice": "Importados {{entries}} indicadores de {{name}}"
+  },
+  "proxyPolicies": {
+    "title": "Construtor de Políticas Híbridas — Primeiro Match Vence",
+    "namePlaceholder": "Nome da política",
+    "action": "Ação",
+    "priority": "Prioridade",
+    "addCondition": "Adicionar condição",
+    "policyNote": "Todas as condições devem coincidir (AND). Maior prioridade executa primeiro; UUID desempata. Sem correspondência resulta em DENY. INSPECT atualmente não é capacidade de interceptação TLS.",
+    "condition": "Condição",
+    "headerName": "Nome do cabeçalho",
+    "headerRegex": "Regex do cabeçalho",
+    "startUtc": "Início UTC HH:MM",
+    "endUtc": "Fim UTC HH:MM",
+    "conditionValue": "Valor da condição",
+    "removeCondition": "Remover condição",
+    "createPolicy": "Criar política",
+    "orderedPolicies": "Políticas ordenadas",
+    "colPriority": "Prioridade",
+    "colPolicy": "Política",
+    "colAction": "Ação",
+    "colConditions": "Condições",
+    "colDelete": "Excluir",
+    "delete": "Excluir",
+    "errors": {
+      "required": "Nome e condições são obrigatórios"
+    }
+  },
+  "proxyModule": {
+    "title": "Secure Proxy — Identidade e Regras",
+    "ruleName": "Nome da regra",
+    "domainPattern": "exemplo.org ou *.exemplo.org",
+    "identitySource": "Origem da identidade",
+    "sources": {
+      "ad": "AD / auth-service",
+      "local": "Perfil proxy local",
+      "any": "Qualquer autenticado"
+    },
+    "group": "Grupo do AD (opcional)",
+    "port": "Qualquer porta",
+    "createRule": "Criar regra",
+    "noRules": "Nenhuma regra de proxy configurada",
+    "colRule": "Regra",
+    "colIdentity": "Identidade",
+    "colGroup": "Grupo",
+    "colHost": "Host",
+    "colPort": "Porta",
+    "colPriority": "Prioridade",
+    "colAction": "Ação",
+    "colManage": "Gerenciar",
+    "delete": "Excluir",
+    "auditTitle": "Auditoria de Segurança ISO — últimas 200 entradas",
+    "noAudit": "Nenhum evento de auditoria",
+    "colTimestamp": "Data/Hora",
+    "colOperation": "Operação",
+    "colTarget": "Alvo",
+    "colResult": "Resultado"
   }
 }

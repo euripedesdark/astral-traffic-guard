@@ -84,7 +84,7 @@ proxy de confiance.
 
 Il y a une exception : `GET /api/v1/acl/check` **accepte** un Bearer JWT HS256,
 et c'est **désactivé par défaut** (`ASTRAL_AUTH_JWT_ENABLED=false`). Le
-BrasilCloud Auth Service n'émet pas encore de jetons, et valider un JWT que
+Astral Auth Service n'émet pas encore de jetons, et valider un JWT que
 personne n'émet est du travail pour rien. Si vous comptez l'activer, lisez
 d'abord le [guide d'intégration](../../docs/GUIA-INTEGRACAO-AUTH-SERVICE.md) —
 et surtout sa section 28, sur ce que l'émission exigera.
@@ -185,7 +185,7 @@ une décision, mettez ce fichier à jour dans la même PR.
 ## Licence
 
 En contribuant, vous acceptez que vos contributions soient sous licence GNU
-Affero General Public License v3.0 (AGPLv3).
+Affero General Public License v3.0 (Proprietary).
 
 ## 🌐 Autres langues
 

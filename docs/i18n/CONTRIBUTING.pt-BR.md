@@ -80,7 +80,7 @@ autenticação por token no painel sem antes discutir a mudança de modelo — o
 e o Nginx dependem do cabeçalho de proxy confiável.
 
 Existe uma exceção: `GET /api/v1/acl/check` **aceita** um Bearer JWT HS256, e
-está **desligada por padrão** (`ASTRAL_AUTH_JWT_ENABLED=false`). O BrasilCloud
+está **desligada por padrão** (`ASTRAL_AUTH_JWT_ENABLED=false`). O Astral
 Auth Service ainda não emite token, e validar um JWT que ninguém emite é trabalho
 por nada. Se você for ligar isso, leia antes o
 [guia de integração](../../docs/GUIA-INTEGRACAO-AUTH-SERVICE.md) — em especial
@@ -180,7 +180,7 @@ atualize esse arquivo no mesmo PR.
 ## Licença
 
 Ao contribuir, você concorda que suas contribuições serão licenciadas sob a
-GNU Affero General Public License v3.0 (AGPLv3).
+Astral Commercial License v3.0 (Proprietary).
 
 ## 🌐 Outros idiomas
 

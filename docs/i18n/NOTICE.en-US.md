@@ -3,12 +3,12 @@
 Astral Platform & HCI
 Copyright (C) 2026 Astral Platform & HCI
 
-This file satisfies section 4(d) of the GNU Affero General Public License v3.0:
+This file satisfies section 4(d) of the Astral Commercial License v3.0:
 it records the copyright notices of third parties and the license of each
 third-party component with which this project interacts.
 
 This program is free software: you can redistribute it and/or modify it under
-the terms of the AGPLv3, published by the Free Software Foundation. There is
+the terms of the Proprietary, published by the Free Software Foundation. There is
 no warranty whatsoever. The full text is in [`LICENSE.md`](LICENSE.md).
 
 ---
@@ -58,7 +58,7 @@ removed.
 
 ---
 
-## ⚠️ Components not compatible with AGPLv3 — separate services
+## ⚠️ Components not compatible with Proprietary — separate services
 
 These items are **independent services**, installed and licensed separately.
 Astral only consumes their data. This section exists so that nobody confuses
@@ -66,8 +66,8 @@ Astral only consumes their data. This section exists so that nobody confuses
 
 | Service | License | Relation to Astral |
 |---|---|---|
-| **Graylog (server)** | **SSPL-1.0** | Astral only sends log entries. The Graylog server is **not** free software under AGPLv3 and is **not** redistributed by this project. |
-| Pi-hole, QEMU, KVM, libvirt, Samba | GPLv2-only / GPLv3 | Invoked as independent programs, not linked. AGPLv3 is compatible with GPLv2-only, GPLv3 and GPL-3.0-or-later. |
+| **Graylog (server)** | **SSPL-1.0** | Astral only sends log entries. The Graylog server is **not** free software under Proprietary and is **not** redistributed by this project. |
+| Pi-hole, QEMU, KVM, libvirt, Samba | GPLv2-only / GPLv3 | Invoked as independent programs, not linked. Proprietary is compatible with GPLv2-only, GPLv3 and GPL-3.0-or-later. |
 
 If you intend to **redistribute** Graylog or any of the items above together with
 Astral, read that component's license first. Astral's license does not apply to

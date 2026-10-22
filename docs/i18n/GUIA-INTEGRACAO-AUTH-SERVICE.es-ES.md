@@ -1,6 +1,6 @@
-# 🔐 Guía de Integración — BrasilCloud Auth Service
+# 🔐 Guía de Integración — Astral Auth Service
 
-> Contrato entre **Astral Platform & HCI** y el **BrasilCloud Auth Service**
+> Contrato entre **Astral Platform & HCI** y el **Astral Auth Service**
 > (`:8181`), en el camino que decide si un dominio se abre o no.
 
 ## 📊 Estado en una frase
@@ -28,7 +28,7 @@ espera, lo que ya tolera y lo que aún no existe.
 No es un tutorial de OAuth 2.0. Es el contrato concreto: qué headers, qué
 claims, qué status, qué defaults.
 
-## 2. Qué es el BrasilCloud Auth Service
+## 2. Qué es el Astral Auth Service
 
 Un servicio de autenticación que corre en **`:8181`**, al lado de Astral. Hoy
 es *stateless* con HTTP Basic: valida la credencial y no guarda estado.

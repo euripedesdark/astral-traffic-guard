@@ -1,35 +1,34 @@
-# Astral Traffic Guard
+# Astral Traffic Guard — Documentation (Français)
 
-![Licence](https://img.shields.io/badge/License-AGPLv3-blue.svg)
-![Rust](https://img.shields.io/badge/Rust-1.80%2B%20%2F%20OOP-orange.svg)
+![Licence](https://img.shields.io/badge/License-Propriétaire-red.svg)
+![Rust](https://img.shields.io/badge/Rust-1.80%2B-orange.svg)
 ![Axum](https://img.shields.io/badge/Axum-0.8-blue.svg)
-![Tokio](https://img.shields.io/badge/Runtime-Tokio%20Async-brightgreen.svg)
+![i18n](https://img.shields.io/badge/i18n-4%20Langues-green.svg)
 
-**Proxy Inverse Haute Performance, Moteur d'ACL et Filtrage Web en Rust** — Module d'entreprise de l'écosystème Astral pour la gestion du trafic, l'équilibrage de charge L7 et l'application des règles d'accès web, conçu avec une architecture orientée objet en Rust.
-
-Distribué sous licence **GNU AGPL v3**. Voir [`LICENSE.md`](LICENSE.md).
+Proxy Inverse Haute Performance, Moteur d'ACL et WAF en Rust, conçu pour les infrastructures d'entreprise exigeant sécurité maximale, contrôle de trafic et auditabilité.
 
 ---
 
-## 🎯 Fonctionnalités Clés
+## Fonctionnalités Principales
 
-- **Architecture Orientée Objet en Rust** : Découplage strict (`domain/`, `service/`, `controller/`), traits asynchrones et dynamic dispatch.
-- **Évaluation d'ACL en Moins de 2ms** : Vérification en temps réel des autorisations et règles par domaine/utilisateur.
-- **Route `auth_request`** : `/api/v1/acl/check` pour l'intégration transparente avec les reverse proxies.
-- **Tableau de Bord SPA** : Interface React 18, Vite et TypeScript supportant 4 langues.
+1. **Proxy Inverse Couche 7 & Terminaison TLS**:
+   - Équilibrage de charge adaptatif (Round Robin, Least Connections, IP Hash).
+   - Terminaison et gestion automatisée des certificats TLS/mTLS.
+2. **Moteur d'ACL et Résolution d'Identité**:
+   - Intégration directe avec Active Directory / LDAPS et Astral Auth Service.
+   - Évaluation des politiques en moins de 2ms par identité, groupe et catégorie.
+3. **Gestionnaire de Flux de Réputation Web**:
+   - Ingestion automatique de flux de cybermenaces (malware, phishing, botnets).
+   - Mises à jour atomiques en mémoire sans interruption de service.
+4. **Générateur de Politiques Hybrides**:
+   - Règles combinées multicritères (domaines, regex d'en-têtes, ports, méthodes HTTP, plages horaires UTC).
+5. **Interface SPA en 4 Langues**:
+   - Tableau de bord React 18 avec bascule dynamique entre Français (fr-FR), Portugais (pt-BR), Anglais (en-US) et Espagnol (es-ES).
+6. **Observabilité et Traçabilité**:
+   - Journalisation d'audit en temps réel et métriques Prometheus pour Grafana.
 
 ---
 
-## 💖 Soutenir le Projet
+## Licence
 
-**Virement International (Wise):**
-- **Bénéficiaire:** Euripedes Batista de Paiva Junior
-- **Routing number (Wire / ACH):** `101019628`
-- **Numéro de compte:** `215822927677`
-- **Banque:** Wise US Inc, 108 W 13th St, Wilmington, DE, 19801, United States
-- **SWIFT / BIC:** `TRWIUS35XXX`
-- **PIX (Brésil):** `24adc62c-b073-4587-974d-03fe35f6733f`
-
----
-
-(c) 2026 Astral Traffic Guard — **Créé par : Euripedes Batista de Paiva Junior**
+Copyright (C) Astral Software. Tous droits réservés. Licence Commerciale Propriétaire.

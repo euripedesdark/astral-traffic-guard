@@ -3,12 +3,12 @@
 Astral Platform & HCI
 Copyright (C) 2026 Astral Platform & HCI
 
-Este archivo satisface la sección 4(d) de la GNU Affero General Public License v3.0:
+Este archivo satisface la sección 4(d) de la Astral Commercial License v3.0:
 registra los avisos de copyright de terceros y la licencia de cada componente
 de terceros con el que este proyecto interactúa.
 
 Este programa es software libre: puedes redistribuirlo y modificarlo bajo los
-términos de la AGPLv3, publicada por la Free Software Foundation. No hay
+términos de la Proprietary, publicada por la Free Software Foundation. No hay
 garantía alguna. El texto completo está en [`LICENSE.md`](LICENSE.md).
 
 ---
@@ -58,7 +58,7 @@ ninguno ha sido eliminado.
 
 ---
 
-## ⚠️ Componentes no compatibles con la AGPLv3 — servicios separados
+## ⚠️ Componentes no compatibles con la Proprietary — servicios separados
 
 Estos elementos son **servicios independientes**, instalados y licenciados por
 fuera. Astral solo consume sus datos. Esta sección existe para que nadie
@@ -66,8 +66,8 @@ confunda "Astral habla con Graylog" con "Astral distribuye Graylog".
 
 | Servicio | Licencia | Relación con Astral |
 |---|---|---|
-| **Graylog (servidor)** | **SSPL-1.0** | Astral solo envía entradas de log. El servidor Graylog **no** es software libre bajo AGPLv3 y **no** es redistribuido por este proyecto. |
-| Pi-hole, QEMU, KVM, libvirt, Samba | GPLv2-only / GPLv3 | Invocados como programas independientes, no vinculados. AGPLv3 es compatible con GPLv2-only, GPLv3 y GPL-3.0-or-later. |
+| **Graylog (servidor)** | **SSPL-1.0** | Astral solo envía entradas de log. El servidor Graylog **no** es software libre bajo Proprietary y **no** es redistribuido por este proyecto. |
+| Pi-hole, QEMU, KVM, libvirt, Samba | GPLv2-only / GPLv3 | Invocados como programas independientes, no vinculados. Proprietary es compatible con GPLv2-only, GPLv3 y GPL-3.0-or-later. |
 
 Si pretendes **redistribuir** Graylog o cualquiera de los elementos anteriores
 junto con Astral, lee la licencia de ese componente primero. La licencia de

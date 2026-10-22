@@ -3,12 +3,12 @@
 Astral Platform & HCI
 Copyright (C) 2026 Astral Platform & HCI
 
-Ce fichier satisfait la section 4(d) de la GNU Affero General Public License v3.0 :
+Ce fichier satisfait la section 4(d) de la Astral Commercial License v3.0 :
 il enregistre les avis de copyright des tiers et la licence de chaque composant
 tiers avec lequel ce projet interagit.
 
 Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le
-modifier selon les termes de la AGPLv3, publiée par la Free Software
+modifier selon les termes de la Proprietary, publiée par la Free Software
 Foundation. Il n'y a aucune garantie. Le texte complet se trouve dans
 [`LICENSE.md`](LICENSE.md).
 
@@ -58,7 +58,7 @@ aucun n'a été supprimé.
 
 ---
 
-## ⚠️ Composants non compatibles avec la AGPLv3 — services séparés
+## ⚠️ Composants non compatibles avec la Proprietary — services séparés
 
 Ces éléments sont des **services indépendants**, installés et licenciés séparément.
 Astral ne fait qu'en consommer les données. Cette section existe pour que personne
@@ -66,8 +66,8 @@ ne confonde "Astral parle à Graylog" avec "Astral distribue Graylog".
 
 | Service | Licence | Relation avec Astral |
 |---|---|---|
-| **Graylog (serveur)** | **SSPL-1.0** | Astral envoie uniquement des entrées de log. Le serveur Graylog **n'est pas** un logiciel libre sous AGPLv3 et **n'est pas** redistribué par ce projet. |
-| Pi-hole, QEMU, KVM, libvirt, Samba | GPLv2-only / GPLv3 | Invoqués comme programmes indépendants, non liés. AGPLv3 est compatible avec GPLv2-only, GPLv3 et GPL-3.0-or-later. |
+| **Graylog (serveur)** | **SSPL-1.0** | Astral envoie uniquement des entrées de log. Le serveur Graylog **n'est pas** un logiciel libre sous Proprietary et **n'est pas** redistribué par ce projet. |
+| Pi-hole, QEMU, KVM, libvirt, Samba | GPLv2-only / GPLv3 | Invoqués comme programmes indépendants, non liés. Proprietary est compatible avec GPLv2-only, GPLv3 et GPL-3.0-or-later. |
 
 Si vous comptez **redistribuer** Graylog ou l'un des éléments ci-dessus avec
 Astral, lisez la licence de ce composant d'abord. La licence d'Astral ne

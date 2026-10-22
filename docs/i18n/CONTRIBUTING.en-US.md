@@ -81,7 +81,7 @@ introduce token-based authentication in the panel without first discussing the
 model change — ATS and Nginx depend on the trusted proxy header.
 
 There is one exception: `GET /api/v1/acl/check` **accepts** a Bearer HS256 JWT,
-and it is **off by default** (`ASTRAL_AUTH_JWT_ENABLED=false`). The BrasilCloud
+and it is **off by default** (`ASTRAL_AUTH_JWT_ENABLED=false`). The Astral
 Auth Service does not issue tokens yet, and validating a JWT that nobody issues
 is work for nothing. If you are going to turn it on, read the
 [integration guide](../../docs/GUIA-INTEGRACAO-AUTH-SERVICE.md) first —
@@ -181,7 +181,7 @@ update that file in the same PR.
 ## License
 
 By contributing, you agree that your contributions will be licensed under the
-GNU Affero General Public License v3.0 (AGPLv3).
+Astral Commercial License v3.0 (Proprietary).
 
 ## 🌐 Other languages
 
