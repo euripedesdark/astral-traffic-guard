@@ -11,6 +11,7 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
+use tower_http::services::{ServeDir, ServeFile};
 use tracing::info;
 
 pub struct TrafficGuardServer {
@@ -47,7 +48,20 @@ impl TrafficGuardServer {
             .allow_methods(Any)
             .allow_headers(Any);
 
-        let mut router = Router::new()
+        let static_dir = if std::path::Path::new("/opt/astral-traffic-guard/static/proxy/index.html").exists() {
+            std::path::PathBuf::from("/opt/astral-traffic-guard/static/proxy")
+        } else if std::path::Path::new("./src/main/resources/static/proxy/index.html").exists() {
+            std::path::PathBuf::from("./src/main/resources/static/proxy")
+        } else {
+            std::path::PathBuf::from("/opt/astral-traffic-guard/static/proxy")
+        };
+
+        let index_file = static_dir.join("index.html");
+        let serve_dir = ServeDir::new(&static_dir).fallback(ServeFile::new(index_file));
+
+        Router::new()
+            .route("/", get(|| async { axum::response::Redirect::temporary("/proxy/") }))
+            .nest_service("/proxy", serve_dir)
             .route(
                 "/health",
                 get(|State(ctrl): State<Arc<AclController>>| async move { ctrl.handle_health() }),
