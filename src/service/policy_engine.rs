@@ -1,11 +1,11 @@
 use crate::domain::policy::{NewProxyPolicy, PolicyAction, PolicyCondition, PolicyDecision, ProxyPolicy, RequestContext};
-use crate::service::proxy_engine::{ProxyError, ProxyService};
+use crate::service::proxy_engine::ProxyError;
 use async_trait::async_trait;
 use chrono::NaiveTime;
 use ipnet::IpNet;
 use regex::RegexBuilder;
 use sqlx::{PgPool, Row};
-use std::{net::IpAddr, str::FromStr, sync::Arc};
+use std::str::FromStr;
 use uuid::Uuid;
 
 type Result<T> = std::result::Result<T, ProxyError>;
@@ -127,7 +127,7 @@ impl PolicyEvaluator for PostgresPolicyEvaluator {
         // A failed DB fetch must NEVER turn into an allow decision.
         for p in self.list().await? {
             if p.enabled && !p.conditions.is_empty() && p.conditions.iter().all(|v|Self::matches(v,c)){
-                let decision=PolicyDecision{action:p.action,policy_id:Some(p.id),reason:"first matching policy".into()};
+                let decision=PolicyDecision{action:if p.action==PolicyAction::Inspect {PolicyAction::Deny} else {p.action},policy_id:Some(p.id),reason:if p.action==PolicyAction::Inspect {"inspection unavailable: fail closed".into()} else {"first matching policy".into()}};
                 self.record_decision(c,&decision).await?;
                 return Ok(decision)
             }
