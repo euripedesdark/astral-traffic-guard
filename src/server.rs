@@ -10,6 +10,7 @@ use axum::{
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::trace::TraceLayer;
+use tower_http::cors::{Any, CorsLayer};
 use tower_http::services::{ServeDir, ServeFile};
 use tracing::info;
 
@@ -58,7 +59,7 @@ impl TrafficGuardServer {
         let index_file = static_dir.join("index.html");
         let serve_dir = ServeDir::new(&static_dir).fallback(ServeFile::new(index_file));
 
-        Router::new()
+        let mut router = Router::new()
             .route("/", get(|| async { axum::response::Redirect::temporary("/proxy/") }))
             .nest_service("/proxy", serve_dir)
             .route(
@@ -106,7 +107,7 @@ impl TrafficGuardServer {
         if let (Some(auth),Some(feeds))=(&self.secure_proxy,&self.feed_manager){
             router=router.merge(crate::controller::feed_controller::router(auth.clone(),feeds.clone()));
         }
-        router.layer(TraceLayer::new_for_http())
+        router.layer(cors).layer(TraceLayer::new_for_http())
     }
 
     pub fn build_authproxy_router(&self) -> Router {

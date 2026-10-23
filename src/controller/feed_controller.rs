@@ -31,9 +31,10 @@ async fn refresh(State(s):State<FeedState>,h:HeaderMap,Path(id):Path<Uuid>)->Res
  if let Err(r)=guard(&s,&h).await{return r}
  match s.feeds.refresh(id).await{Ok(v)=>Json(v).into_response(),Err(e)=>error(e)}
 }
-pub fn router(auth:Arc<dyn ProxyService>,feeds:FeedManagerRef)->Router{
- Router::new().route("/api/v1/secure-proxy/feeds",get(feeds).post(add))
- .route("/api/v1/secure-proxy/categories",get(categories))
- .route("/api/v1/secure-proxy/feeds/{id}/refresh",axum::routing::post(refresh))
- .with_state(FeedState{feeds,auth})
+pub fn router(auth: Arc<dyn ProxyService>, feed_mgr: FeedManagerRef) -> Router {
+    Router::new()
+        .route("/api/v1/secure-proxy/feeds", get(feeds).post(add))
+        .route("/api/v1/secure-proxy/categories", get(categories))
+        .route("/api/v1/secure-proxy/feeds/{id}/refresh", axum::routing::post(refresh))
+        .with_state(FeedState { feeds: feed_mgr, auth })
 }
