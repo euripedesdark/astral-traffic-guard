@@ -32,3 +32,16 @@ Proxy Inverse Haute Performance, Moteur d'ACL et WAF en Rust, conçu pour les in
 ## Licence
 
 Copyright (C) Astral Software. Tous droits réservés. Licence Commerciale Propriétaire.
+
+## 🔐 Politique d'Accès Unifié et Authentification
+
+**Astral Traffic Guard** adopte la politique unifiée de gouvernance et de contrôle d'accès de l'écosystème Astral :
+
+1. **OAuth2 / Samba Active Directory / Postgres** :
+   - Authentification fédérée orchestrée via `astral-auth-service` (`http://127.0.0.1:8181`). Les opérateurs de trafic et de sécurité s'authentifient auprès de Samba AD pour configurer le proxy et le WAF.
+2. **Via `auth-service` (SSO)** :
+   - Validation des en-têtes `Authorization: Bearer <token>` et des cookies de session (`sso_token` et `astral_token`) signés avec le secret partagé (`AUTH_TOKEN_SECRET` dans `/etc/auth-service/auth.env`).
+3. **Utilisateur Local Linux (`root` ou `sudo`)** :
+   - Authentification système d'opérateur pour les comptes disposant des privilèges `root` ou membres des groupes `wheel` ou `sudo`.
+4. **Superutilisateur PostgreSQL** :
+   - Accès administratif pour tout compte PostgreSQL avec `rolsuper = true` (ex. `postgres`).
